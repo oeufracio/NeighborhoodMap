@@ -27,7 +27,7 @@ To filter the displayed locations, just start writing and the displayed list wil
 
 Finally, the application is responsive 
 
-![Full App](/img/img03.png)
+![Full App](/img/img04.png)
 
 
 **Extra:** the application is at [www.odineufracio.com](www.odineufracio.com)
