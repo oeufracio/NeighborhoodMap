@@ -14,9 +14,11 @@
         <div id="my-sidebar" class="w3-sidebar w3-bar-block w3-collapse w3-card-2 w3-animate-left">
             <button id="my-sidebar-close" class="w3-bar-item w3-button w3-large w3-hide-large">Close &times;</button>
 
-            <input id="new-location-text" class="w3-input"  type="text" placeholder="new location...">
+            <input id="new-location-text" class="w3-input"  type="text" placeholder="new location..."
+                   data-bind="value: locationToAdd, valueUpdate: 'afterkeydown', executeOnEnter: addLocation">
 
-            <input id="filter-text" class="w3-input"  type="text" placeholder="filter string...">
+            <input id="filter-text" class="w3-input"  type="text" placeholder="filter string..."
+                   data-bind="value: stringToFilter, valueUpdate: 'afterkeydown', filterOnKeypress: filterLocations">
 
             <ul data-bind="foreach: locations">
                 <li class="w3-display-container w3-hover-grey" data-bind="click: $root.selectLocation">

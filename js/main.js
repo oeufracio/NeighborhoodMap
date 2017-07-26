@@ -4,14 +4,15 @@ let bounds;
 let urlIconBlue = 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png';
 let urlIconRed = 'https://maps.google.com/mapfiles/ms/icons/red-dot.png';
 
-
 // hard-coded location
 let data = ['california usa',
     'baja california mexico',
     'new york usa',
     'guanajuato mexico',
+    'seattle usa',
     'puebla mexico',
-    'chihuahua mexico'
+    'chihuahua mexico',
+    'boston usa'
 ];
 
 let viewModel = {
@@ -19,6 +20,7 @@ let viewModel = {
     //data
     locations: ko.observableArray([]),
     locationToAdd: ko.observable( "" ),
+    stringToFilter: ko.observable( "" ),
 
     //behavior
     init: function(){
@@ -37,7 +39,7 @@ let viewModel = {
             let self = this;
 
             // new address to be added
-            let address = this.locationToAdd();
+            let address = this.locationToAdd().toLowerCase();
 
             let geocoder = new google.maps.Geocoder();
 
@@ -87,11 +89,9 @@ let viewModel = {
 
                         // get information using ajax for this new location
                         self._fillInfoWindow( newLocation );
-
                     } //end else OK
             }); //end callback
         } //end else geocoder
-
     },
     removeLocation: function () {
         this.marker.setMap(null);
@@ -101,7 +101,7 @@ let viewModel = {
     },
     selectLocation: function() {
         // not the best way ... set all icon marker to blue and close its infowindow
-        for(var i=0; i< viewModel.locations().length; i++) {
+        for(let i=0; i< viewModel.locations().length; i++) {
             viewModel.locations()[i].marker.setIcon(urlIconBlue);
             viewModel.locations()[i].infowindow.close();
         }
@@ -110,6 +110,21 @@ let viewModel = {
         this.marker.setIcon(urlIconRed);
         this.infowindow.setContent( viewModel._getContent( this) );
         this.infowindow.open(map, this.marker);
+    },
+    filterLocations: function() {
+
+        for(let i=0; i< this.locations().length; i++) {
+            // iterate over the array and check if stringToFilter is in the name
+            if ( this.locations()[i].name.search( this.stringToFilter().toLowerCase() ) === -1 ) {
+                this.locations()[i].isVisible(false);
+                this.locations()[i].infowindow.close();
+                this.locations()[i].marker.setMap(null);
+
+            } else {
+                this.locations()[i].isVisible(true);
+                this.locations()[i].marker.setMap(map);
+            }
+        }
     },
 
     //helpers
@@ -123,14 +138,12 @@ let viewModel = {
         infoContent += (location.data.foursquare===null) ? '<p>Loading foursquare...</p>' : location.data.foursquare;
 
         return infoContent;
-
     },
     _fillInfoWindow: function( location ) {
 
         // ---------Set StreetView Image.---------- //
         let src = `https://maps.googleapis.com/maps/api/streetview?size=200x100&location=${location.name}&key=AIzaSyCHHKS6PAaL6JZ5b9GDZ0CLtl_dhKl-Jwk`;
         location.data.streetview = `<img src="${src}">`;
-
 
         // ---------Set Wikipedia First Article.---------- //
         let urlWiki = 'https://en.wikipedia.org/w/api.php';
@@ -146,15 +159,14 @@ let viewModel = {
             success: function(data) {
 
                 if (data[1].length > 0)
-                    location.data.wiki = `<p>Wiki: <a target="_blank" href="$\{data[3][0]}">${data[1][0]}</a></p>`;
+                    location.data.wiki = `<p>Wiki: <a target="_blank" href="${data[3][0]}">${data[1][0]}</a></p>`;
                 else
                     location.data.wiki = `<p>Wiki: ${data[0]}</p>`;
             },
             error: function() {
-                location.data.wiki = `<p>Wiki: NO MATCH FOUND</p>`;
+                location.data.wiki = `<p>Wiki: ERROR REPORTED</p>`;
             }
         });
-
 
         // --------- Set Foursaqure First Venue ---------- //
         let urlFourSquare = "https://api.foursquare.com/v2/venues/search";
@@ -170,22 +182,53 @@ let viewModel = {
         $.ajax(urlFourSquare, {
             dataType: "json",
             success: function(data) {
+                if (data.response.venues.length > 0) {
 
-                if (data.response.venues[0].url === undefined) {
-                    location.data.foursquare = `<p>Foursquare: ${data.response.venues[0].name}</p>`;
+                    if (data.response.venues[0].url === undefined) {
+                        location.data.foursquare = `<p>Foursquare: ${data.response.venues[0].name}</p>`;
+                    } else {
+                        location.data.foursquare = `<p>Foursquare: <a target="_blank" href="${data.response.venues[0].url}">${data.response.venues[0].name}</a></p>`;
+                    }
+
                 } else {
-                    location.data.foursquare = `<p>Foursquare: <a target="_blank" href="${data.response.venues[0].url}">${data.response.venues[0].name}</a></p>`;
+                    location.data.foursquare = `<p>Foursquare: NO MATCH FOUND</p>`;
                 }
             },
             error: function() {
-                location.data.foursquare = `<p>Foursquare: NO MATCH FOUND</p>`;
+                location.data.foursquare = `<p>Foursquare: ERROR REPORTED </p>`;
             }
         });
-
     }
 
 }; // end viewModel
 
+// handle additions on enter
+ko.bindingHandlers.executeOnEnter = {
+    init: function(element, valueAccessor, allBindingAccessor, viewModel) {
+
+        let value = valueAccessor();
+
+        $(element).keypress( function(event) {
+            let keyCode = (event.which ? event.which : event.keyCode);
+            if(keyCode === 13) {
+
+                value.call(viewModel);
+                return false;
+            }
+        });
+    }
+};
+
+ko.bindingHandlers.filterOnKeypress = {
+    init: function(element, valueAccessor, allBindingAccessor, viewModel) {
+
+        let value = valueAccessor();
+
+        $(element).keyup( function(event) {
+            value.call(viewModel);
+        });
+    }
+};
 
 ko.applyBindings(viewModel);
 
@@ -198,7 +241,6 @@ function initMap() {
 
     viewModel.init();
 }
-
 
 // This is required by w3.css
 $('#my-content-open').on('click',function () {
