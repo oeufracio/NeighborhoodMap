@@ -91,6 +91,25 @@ let viewModel = {
                     } //end else OK
             }); //end callback
         } //end else geocoder
+
+    },
+    removeLocation: function () {
+        this.marker.setMap(null);
+        this.marker = null;
+        this.infowindow = null;
+        viewModel.locations.remove(this);
+    },
+    selectLocation: function() {
+        // not the best way ... set all icon marker to blue and close its infowindow
+        for(var i=0; i< viewModel.locations().length; i++) {
+            viewModel.locations()[i].marker.setIcon(urlIconBlue);
+            viewModel.locations()[i].infowindow.close();
+        }
+
+        // the selected marker, change icon marker to red and open its infowindow
+        this.marker.setIcon(urlIconRed);
+        this.infowindow.setContent( viewModel._getContent( this) );
+        this.infowindow.open(map, this.marker);
     },
 
     //helpers
@@ -168,6 +187,7 @@ let viewModel = {
 }; // end viewModel
 
 
+ko.applyBindings(viewModel);
 
 function initMap() {
     //load the map
@@ -188,5 +208,3 @@ $('#my-content-open').on('click',function () {
 $('#my-sidebar-close').on('click',function () {
     $('#my-sidebar').css({"display":"none"});
 });
-
-//add hard-coded location to the map

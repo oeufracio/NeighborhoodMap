@@ -2,6 +2,19 @@ html, body {
     height: 100%;
 }
 
+ul {
+    padding-left: 0px;
+}
+li {
+    list-style-type: none;
+    font-size: 18px;
+    border-radius: 3px;
+}
+
+li > span {
+    margin-left: 10px;
+}
+
 #map {
     margin-top: 0.5vh;
     height: 90vh;
@@ -12,4 +25,12 @@ html, body {
 }
 #my-content {
     margin-left:300px;
+}
+
+.fa-close {
+    color: lightgrey;
+}
+
+.fa-close:hover {
+    color: black;
 }

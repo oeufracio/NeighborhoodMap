@@ -18,7 +18,11 @@
 
             <input id="filter-text" class="w3-input"  type="text" placeholder="filter string...">
 
-            <ul>
+            <ul data-bind="foreach: locations">
+                <li class="w3-display-container w3-hover-grey" data-bind="click: $root.selectLocation">
+                    <span data-bind="text: name, visible: isVisible"></span>
+                    <i class="fa fa-close w3-display-right w3-margin-right" data-bind="click: $root.removeLocation,visible: isVisible"></i>
+                </li>
             </ul>
         </div>
 
