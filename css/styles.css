@@ -1,0 +1,15 @@
+html, body {
+    height: 100%;
+}
+
+#map {
+    margin-top: 0.5vh;
+    height: 90vh;
+}
+
+#my-sidebar {
+    width:300px;
+}
+#my-content {
+    margin-left:300px;
+}

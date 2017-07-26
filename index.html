@@ -11,9 +11,34 @@
     </head>
 
     <body>
+        <div id="my-sidebar" class="w3-sidebar w3-bar-block w3-collapse w3-card-2 w3-animate-left">
+            <button id="my-sidebar-close" class="w3-bar-item w3-button w3-large w3-hide-large">Close &times;</button>
+
+            <input id="new-location-text" class="w3-input"  type="text" placeholder="new location...">
+
+            <input id="filter-text" class="w3-input"  type="text" placeholder="filter string...">
+
+            <ul>
+            </ul>
+        </div>
+
+        <div id="my-content" class="w3-main">
+            <div class="w3-black">
+                <button id="my-content-open" class="w3-button w3-black w3-xlarge w3-hide-large" >&#9776;</button>
+                <div class="w3-container">
+                    <h2>Find your location!</h2>
+                </div>
+            </div>
+
+            <div class="w3-container">
+                <div id="map"></div>
+            </div>
+        </div>
 
         <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
         <script src="js/main.js"></script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCHHKS6PAaL6JZ5b9GDZ0CLtl_dhKl-Jwk&v=3&callback=initMap"></script>
+
     </body>
 </html>
